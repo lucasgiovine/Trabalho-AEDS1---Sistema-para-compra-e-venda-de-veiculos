@@ -128,7 +128,7 @@ void vendeVeiculos(FILE *estoqueFile, FILE *historicoVendasFile, FILE *marcasFil
     scanf("%d", &veiculoVenda.ano);
     printf("Marca: ");
     scanf("%s", veiculoVenda.marca);
-
+    
     fseek(estoqueFile, 0, SEEK_SET);
     char line[MAX_LINE_SIZE];
     int veiculoEncontrado = 0;
@@ -210,12 +210,83 @@ void vendeVeiculos(FILE *estoqueFile, FILE *historicoVendasFile, FILE *marcasFil
     fflush(marcasFile);
 }
 
+// Implementações Lucas Giovine
+
+struct Transacao {
+    char data[20];  
+};
+
+int contarTransacoesNoPeriodo(FILE *arquivo, const char *inicio, const char *fim) {
+    struct Transacao transacao;
+
+    int contador = 0;
+
+    // Percorre o arquivo
+    while (fscanf(arquivo, "%19[^,],", transacao.data) != EOF) {
+        // Verifica se a data está no intervalo especificado
+        if (strcmp(transacao.data, inicio) >= 0 && strcmp(transacao.data, fim) <= 0) {
+            // Incrementa o contador
+            contador++;
+        }
+    }
+
+    return contador;
+}
+
+void relatorioComprasVendasNoPeriodo(const char *inicio, const char *fim) {
+    FILE *arquivoCompra = fopen("historico_compras.csv", "r");
+    FILE *arquivoVenda = fopen("historico_vendas.csv", "r");
+    FILE *arquivoRelatorio = fopen("relatorio.csv", "a");
+
+    if (arquivoCompra == NULL || arquivoVenda == NULL) {
+        printf("Erro ao abrir os arquivos.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Escolha uma opcao:\n");
+    printf("1. Exibir na tela\n");
+    printf("2. Transferir para o arquivo relatorio.csv\n");
+
+    int opcao;
+    scanf("%d", &opcao);
+
+    int contadorCompras = contarTransacoesNoPeriodo(arquivoCompra, inicio, fim);
+    int contadorVendas = contarTransacoesNoPeriodo(arquivoVenda, inicio, fim);
+
+    switch (opcao) {
+        case 1:
+            // Exibir na tela
+            printf("Relatorio de Compras e Vendas no Periodo de %s a %s:\n", inicio, fim);
+            printf("\nTotal de Compras no Periodo: %d\n", contadorCompras);
+            printf("Total de Vendas no Periodo: %d\n", contadorVendas);
+            break;
+
+        case 2:
+            // Transferir para o arquivo relatorio.csv
+            fprintf(arquivoRelatorio, "Relatorio de Compras e Vendas no Periodo de %s a %s:\n", inicio, fim);
+            fprintf(arquivoRelatorio, "\nTotal de Compras no Periodo: %d\n", contadorCompras);
+            fprintf(arquivoRelatorio, "Total de Vendas no Periodo: %d\n", contadorVendas);
+            printf("Relatorio transferido para o arquivo relatorio.csv\n");
+            break;
+
+        default:
+            printf("Opcao invalida.\n");
+            break;
+    }
+
+    fclose(arquivoCompra);
+    fclose(arquivoVenda);
+    fclose(arquivoRelatorio);
+}
+
 int main() {
     FILE *ofertasFile = fopen("veiculos_ofertas.csv", "r");
     FILE *estoqueFile = fopen("estoque.csv", "a+");
     FILE *historicoComprasFile = fopen("historico_compras.csv", "a");
     FILE *historicoVendasFile = fopen("historico_vendas.csv", "a");
     FILE *marcasFile = fopen("marcas.csv", "a+");
+    char inicio[20], fim[20];
+
 
     if (ofertasFile == NULL || estoqueFile == NULL || historicoComprasFile == NULL || historicoVendasFile == NULL || marcasFile == NULL) {
         perror("Erro ao abrir o arquivo");
@@ -227,7 +298,8 @@ int main() {
         printf("\nMenu:\n");
         printf("1 - Compra de veiculos para estoque\n");
         printf("2 - Venda de veiculos\n");
-        printf("3 - Sair\n");
+        printf("3 - Relatorio de compras/vendas em determinado periodo\n");
+        printf("4 - Sair\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
 
@@ -239,11 +311,12 @@ int main() {
                 vendeVeiculos(estoqueFile, historicoVendasFile, marcasFile);
                 break;
             case 3:
+                relatorioComprasVendasNoPeriodo(inicio,fim);
                 break;
             default:
                 printf("Opcao invalida. Tente novamente.\n");
         }
-    } while (opcao != 3);
+    } while (opcao != 4);
 
     fclose(ofertasFile);
     fclose(estoqueFile);
