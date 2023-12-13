@@ -279,6 +279,82 @@ void relatorioComprasVendasNoPeriodo(const char *inicio, const char *fim) {
     fclose(arquivoRelatorio);
 }
 
+void criarBackup(const char *arquivoOrigem, const char *arquivoBackup) {
+    FILE *arquivoOrigemPtr = fopen(arquivoOrigem, "rb");
+    FILE *arquivoBackupPtr = fopen(arquivoBackup, "rb");
+
+    if(arquivoBackupPtr != NULL){
+        fclose(arquivoBackupPtr);
+        fopen(arquivoBackup,"wb");
+    }
+    else if(arquivoBackupPtr == NULL)
+        fopen(arquivoBackup, "ab");
+
+    if (arquivoOrigemPtr == NULL) {
+        printf("Erro ao abrir os arquivos.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    char caractere;
+
+    // Copia cada caractere do arquivo de origem para o arquivo de backup
+    while ((caractere = fgetc(arquivoOrigemPtr)) != EOF) {
+        fputc(caractere, arquivoBackupPtr);
+    }
+
+    fclose(arquivoOrigemPtr);
+    fclose(arquivoBackupPtr);
+
+    printf("Backup de %s criado com sucesso em %s.\n", arquivoOrigem, arquivoBackup);
+}
+
+void fazerBackup() {
+    int opcao;
+    printf("Digite uma opcao:\n");
+    printf("1 - Backup estoque\n");
+    printf("2 - Backup compras\n");
+    printf("3 - Backup vendas\n");
+    printf("4 - Backup marcas\n");
+    printf("5 - Backup relatorio\n");
+    scanf("%d", &opcao);
+
+
+    switch (opcao)
+    {
+    case 1:
+        criarBackup("estoque.csv", "estoque_backup.bin");
+        break;
+    case 2:
+        criarBackup("historico_compras.csv", "historico_compras_backup.bin");
+        break;
+    case 3:
+        criarBackup("historico_vendas.csv", "historico_vendas_backup.bin");
+        break;
+    case 4: 
+        criarBackup("marcas.csv", "relatorio_marcas.bin");
+        break;
+    case 5:
+        criarBackup("relatorio.csv", "relatorio_backup.bin");
+    default:
+        printf("Digite uma opcao valida!\n");
+        break;
+    }
+}
+
+void excluirBackup(){
+    char nomearquivo[50];
+    printf("Digite o nome do backup que deseja excluir:\n");
+    fflush(stdin);
+    scanf("%[^\n]", &nomearquivo);
+    if (remove(nomearquivo) == 0) {
+        printf("Backup %s excluido com sucesso.\n", nomearquivo);
+    } else {
+        printf("Erro ao excluir o backup %s.\n", nomearquivo);
+    }
+    nomearquivo[0] = '\0';
+}
+
+
 int main() {
     FILE *ofertasFile = fopen("veiculos_ofertas.csv", "r");
     FILE *estoqueFile = fopen("estoque.csv", "a+");
@@ -299,8 +375,10 @@ int main() {
         printf("1 - Compra de veiculos para estoque\n");
         printf("2 - Venda de veiculos\n");
         printf("3 - Relatorio de compras/vendas em determinado periodo\n");
-        printf("4 - Sair\n");
-        printf("Escolha uma opcao: ");
+        printf("4 - Backup\n");
+        printf("5 - Excluir Backup\n");
+        printf("6 - Sair\n");
+        printf("Escolha uma opcao:\n");
         scanf("%d", &opcao);
 
         switch (opcao) {
@@ -313,10 +391,16 @@ int main() {
             case 3:
                 relatorioComprasVendasNoPeriodo(inicio,fim);
                 break;
+            case 4:
+                fazerBackup();
+                break;
+            case 5:
+                excluirBackup();
+                break;
             default:
                 printf("Opcao invalida. Tente novamente.\n");
         }
-    } while (opcao != 4);
+    } while (opcao != 6);
 
     fclose(ofertasFile);
     fclose(estoqueFile);
