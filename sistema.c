@@ -200,11 +200,6 @@ void vendeVeiculos(FILE *estoqueFile, FILE *historicoVendasFile, FILE *marcasFil
         }
     }
 
-    if (!marcaPresente) {
-        // Se a marca não está presente no estoque, remova do arquivo marcas.csv
-        // (A função adicionarMarcaSeAusente já trata essa situação, então não há necessidade de remover)
-    }
-
     fflush(estoqueFile);
     fflush(historicoVendasFile);
     fflush(marcasFile);
@@ -389,6 +384,12 @@ int main() {
                 vendeVeiculos(estoqueFile, historicoVendasFile, marcasFile);
                 break;
             case 3:
+                printf("Digite uma data para inicio respeitando o formato: Ano (4 digitos)-Mes-dia-hora-minuto:");
+                fflush(stdin);
+                scanf("%s", &inicio);
+                printf("Digite uma data para fim respeitando o formato: Ano (4 digitos)-Mes-dia-hora-minuto:");
+                fflush(stdin);
+                scanf("%s", &fim);
                 relatorioComprasVendasNoPeriodo(inicio,fim);
                 break;
             case 4:
