@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/ADM/Desktop/djop/Trabalho-AEDS1---Sistema-para-compra-e-venda-de-veiculos",
-      "program": "c:/Users/ADM/Desktop/djop/Trabalho-AEDS1---Sistema-para-compra-e-venda-de-veiculos/build/Debug/outDebug",
+      "cwd": "c:/Users/1470405/Downloads/djobs/trabalho aeds",
+      "program": "c:/Users/1470405/Downloads/djobs/trabalho aeds/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

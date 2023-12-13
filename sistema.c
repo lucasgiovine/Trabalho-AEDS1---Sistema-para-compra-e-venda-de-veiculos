@@ -345,11 +345,11 @@ void excluirBackup(){
     char nomearquivo[50];
     printf("Digite o nome do backup que deseja excluir:\n");
     fflush(stdin);
-    scanf("%[^\n]", &nomearquivo);
+    scanf("%s", &nomearquivo);
     if (remove(nomearquivo) == 0) {
         printf("Backup %s excluido com sucesso.\n", nomearquivo);
     } else {
-        printf("Erro ao excluir o backup %s.\n", nomearquivo);
+        printf("Erro ao excluir o backup \n", nomearquivo);
     }
     nomearquivo[0] = '\0';
 }
@@ -396,6 +396,8 @@ int main() {
                 break;
             case 5:
                 excluirBackup();
+                break;
+            case 6:
                 break;
             default:
                 printf("Opcao invalida. Tente novamente.\n");
